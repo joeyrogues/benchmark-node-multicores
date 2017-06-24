@@ -2,7 +2,7 @@ const http = require('request-promise')
 
 REQUEST_COUNT = process.env.REQUEST_COUNT
 
-const QUERY_COUNT = REQUEST_COUNT && +(REQUEST_COUNT) || 40
+const QUERY_COUNT = REQUEST_COUNT && +(REQUEST_COUNT) || 20
 
 let generateDummyRequest = function ({port}) {
 	return http({
@@ -19,14 +19,18 @@ let arrayOrPromises_one = new Array(QUERY_COUNT)
 let arrayOrPromises_many = new Array(QUERY_COUNT)
 	.fill(() => generateDummyRequest({port: 8001}))
 
-// Firing the one core requests
-console.time('one core')
-Promise.all(arrayOrPromises_one.map(e => e())).then((data) => {
-	console.timeEnd('one core')
+setTimeout(() => {
 
-	// Firing the many cores requests
-	console.time('many cores')
-	Promise.all(arrayOrPromises_many.map(e => e())).then((data) => {
-		console.timeEnd('many cores')
+	// Firing the one core requests
+	var t1 = Date.now()
+	Promise.all(arrayOrPromises_one.map(e => e())).then((data) => {
+		console.log(Date.now() - t1)
+
+		// Firing the many cores requests
+		var t2 = Date.now()
+		Promise.all(arrayOrPromises_many.map(e => e())).then((data) => {
+			console.log(Date.now() - t2)
+		})
 	})
-})
+
+}, 2000) // Waiting for both servers to be ready (using foreman)

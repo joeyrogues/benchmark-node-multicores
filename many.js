@@ -16,8 +16,9 @@ if (cluster.isMaster) {
   });
 } else {
   http.createServer((req, res) => {
-  	for(let i = 0 ; i < 10000 ; i++) {
-  		console.log(i)
+    let a = 0
+  	for(let i = 0 ; i < 100000000 ; i++) {
+  		a = a + i
   	}
 		res.writeHead(200);
   	res.end(new Date().toISOString());
